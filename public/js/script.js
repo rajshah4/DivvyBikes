@@ -76,6 +76,14 @@ $('.reload').click(function(){
     location.reload();
 });
 
+$('.about').click(function(){
+	console.log("aboutclick");
+    $('.aboutPopup').fadeIn();
+});
+
+$('.aboutPopup .panel-heading>.glyphicon').click(function(){
+    $('.aboutPopup').fadeOut();
+});
 
 var transform = d3.geo.transform({
     point: projectPoint
