@@ -1,7 +1,9 @@
 var timeFactor = 5; //number of minutes in real life to a second in the viz
-$('.timeFactor').html(timeFactor); //Displays the timeFactor in the UI.
+$('.timeFactor').html(timeFactor); 
+var nexttime = 0; //number of minutes in real life to a second in the viz
+$('.nexttime').html(nexttime);//Displays the timeFactor in the UI.
 var tweenToggle = 0;
-   var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',{
+   var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
 });
 
@@ -11,20 +13,7 @@ var topLeft,bottomRight;
 var time = moment();
 var map = L.map('map',{ zoomControl:false })
 .addLayer(tiles)
-.setView([40.7127, -74.0059], 14);
-
-
-var running = {
-    "fare":0,
-    "surcharge":0,
-    "mtatax":0,
-    "tolls":0,
-    "tip":0,
-    "total":0,
-    "passengers":0
-} ;
-
-
+.setView([41.89, -87.61], 14);
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 g = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -74,84 +63,19 @@ var markerLine = areaChartSvg.append('line')
 var dummyData = [];
 
 
-
 x.domain([0, 24]);
 y.domain([0, 600]);
 
 var chartPath = areaChartSvg.append("path")
 .datum(dummyData)
 .attr("class", "area");
-//.attr("d", area);
-
-areaChartSvg.append("g")
-.attr("class", "x axis")
-.attr("transform", "translate(0," + areaChartHeight + ")")
-.call(xAxis)
-.append("text")
-.attr("y", 9)
-.attr("x", 39)
-.attr("dy", ".71em")
-.style("text-anchor", "end")
-.text("Hour");
-
-areaChartSvg.append("g")
-.attr("class", "y axis")
-.call(yAxis)
-.append("text")
-.attr("transform", "rotate(-90)")
-.attr("y", 6)
-.attr("dy", ".71em")
-.style("text-anchor", "end")
-.text("Fares ($)");
 
 
-
-//end area chart
-
-//listeners 
-
-$('.slower').click(function(){
-    if(timeFactor > 1){
-        timeFactor -= 1;  
-    };
-
-    $('.timeFactor').html(timeFactor);
-
-});
-
-$('.faster').click(function(){
-    timeFactor += 1;
-    $('.timeFactor').html(timeFactor);
-
-});
 
 $('.reload').click(function(){
     location.reload();
 });
 
-$('.about').click(function(){
-    $('.aboutPopup').fadeIn();
-});
-
-$('.asterisks').click(function(){
-    $('.asterisksPopup').fadeIn();
-});
-
-$('.attribution').click(function(){
-    $('.attributionPopup').fadeIn();
-});
-
-$('.aboutPopup .panel-heading>.glyphicon').click(function(){
-    $('.aboutPopup').fadeOut();
-});
-
-$('.asterisksPopup .panel-heading>.glyphicon').click(function(){
-    $('.asterisksPopup').fadeOut();
-});
-
-$('.attributionPopup .panel-heading>.glyphicon').click(function(){
-    $('.attributionPopup').fadeOut();
-});
 
 var transform = d3.geo.transform({
     point: projectPoint
@@ -190,7 +114,7 @@ d3.json('/trips', function (data) {
     var pointsArray = [];
     var points = g.selectAll(".point")
     .data(pointsArray);
-
+	
 
 //.attr("style","opacity:0");
 
@@ -223,12 +147,9 @@ function iterate() {
     .datum(emptyData)
     .attr("class", "empty");
 
-
-
     var path = svg.select("path.trip" + i)
     .attr("style", "opacity:.7")
     .call(transition);
-
 
 
     function pathStartPoint(path) {
@@ -249,11 +170,16 @@ function iterate() {
 
 path.each(function(d){
 
+     var nexttime =  (d.properties.nextpickuptime);
+     console.log(nexttime)
+    $('.nexttime').text(time.format('h:mm a'));
+
 //add the translation of the map's g element
 startPoint[0] = startPoint[0]; //+ topLeft[0];
 startPoint[1] = startPoint[1]; //+ topLeft[1];
 var newLatLon = coordToLatLon(startPoint);
 pointsArray.push([newLatLon.lng,newLatLon.lat,d.properties.hasfare]);
+
 
 
 points = g.selectAll(".point")
@@ -278,13 +204,6 @@ if(d.properties.hasfare) { //transition marker to show full taxi
     .duration(500)
     .attr("r",5)
     .attr('style','opacity:1');
-
-
-
-
-
-
-
 } else { //Transition marker to show empty taxi
 
     marker
@@ -292,7 +211,6 @@ if(d.properties.hasfare) { //transition marker to show full taxi
     .duration(500)
     .attr("r",40)
     .attr('style','opacity:.3');
-
 }
 });
 
@@ -313,11 +231,9 @@ function transition(path) {
         duration = duration/60000; //convert to minutes
 
         duration = duration * (1/timeFactor) * 1000;
-
+        //console.log(d.properties.nextpickuptime);
 
         time = moment(d.properties.pickuptime.toString());
-
-
 
         $('.readableTime').text(time.format('h:mm a'));
 
@@ -327,27 +243,6 @@ function transition(path) {
     .attrTween("stroke-dasharray", tweenDash)
     .each("end", function (d) {
 
-        if(d.properties.hasfare) {
-
-            running.fare += parseFloat(d.properties.fare);
-            running.surcharge += parseFloat(d.properties.surcharge);
-            running.mtatax += parseFloat(d.properties.mtatax);
-            running.tip += parseFloat(d.properties.tip);
-            running.tolls += parseFloat(d.properties.tolls);
-            running.total += parseFloat(d.properties.total);
-            running.passengers += parseFloat(d.properties.passengers);
-
-
-
-            for(var p = 0;p<d.properties.passengers;p++){
-                $('.passengerGlyphs').append('<span class="glyphicon glyphicon-user"></span>');
-            }
-
-            updateRunning();
-
-
-
-        };
         i++;
 
         var nextPath = svg.select("path.trip" + i);
@@ -387,11 +282,7 @@ if(chartInterval == 5){
 
     chartInterval = 0;
 
-
-
     var decimalHour = parseInt(time.format('H')) + parseFloat(time.format('m')/60)
-
-
 
 
     if(isNaN(d.properties.fare)){
@@ -401,18 +292,10 @@ if(chartInterval == 5){
     var incrementalFare = d.properties.fare*t;
 
 
-    dummyData.push({
-        "time": decimalHour,
-        "runningFare": running.fare + parseFloat(incrementalFare)
-    });
 
 
 chartPath.attr("d", area); //redraw area chart
 if(d.properties.hasfare == false) { //draw purple area for nonfare time
-    emptyData.push({
-        "time": decimalHour,
-        "runningFare": running.fare + parseFloat(incrementalFare)
-    });
 
     emptyPath.attr("d", area);
 }
@@ -435,9 +318,9 @@ return i(t);
 
 }
 
-updateRunning();
 
-$('#begin').click(function(){
+//$('#begin').click(function(){
+$(document).ready(function(){
     $('.overlay').fadeOut(250);
     $('.box').fadeIn(250);
     setTimeout(function(){
@@ -448,15 +331,6 @@ $('#begin').click(function(){
 });
 
 
-function updateRunning() {
-    $('.runningFare').text('$'+running.fare.toFixed(2));
-    $('.runningSurcharge').text('$'+running.surcharge.toFixed(2));
-    $('.runningTax').text('$'+running.mtatax.toFixed(2));
-    $('.runningTip').text('$'+running.tip.toFixed(2));
-    $('.runningTolls').text('$'+running.tolls.toFixed(2));
-    $('.runningTotal').text('$'+running.total.toFixed(2));
-    $('.runningPassengers').text(running.passengers);
-}
 
 // Reposition the SVG to cover the features.
 function reset() {

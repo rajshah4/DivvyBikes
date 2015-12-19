@@ -26,7 +26,7 @@
     }
 
     path.true {
-        stroke:#3366FF;
+        stroke:#FFF200;
     }
 
     path.false {
@@ -35,7 +35,7 @@
     }
 
     #marker {
-        fill: yellow;
+        fill: #3db7e4;
     }
 
    
@@ -66,7 +66,7 @@
 
 
     .navbar-inverse {
-        background-color:#F1F100;
+        background-color:#FFF200;
     }
 
     .overlay {
@@ -77,7 +77,7 @@
         -webkit-transform: translateY(-50%);
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
-        color:#333333;
+        color:#3db7e4;
  
     }
 
@@ -89,7 +89,7 @@
         -webkit-transform: translateY(-50%);
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
-        color: #333333;
+        color: #3db7e4;
         width: 60%%;
         z-index: 10;
         display:none;
@@ -108,7 +108,7 @@
         position: absolute;
         top: 65px;
         left: 15px;
-        width: 300px;  
+        width: 250px;  
     }
      .legendBox {
         position: absolute;
@@ -118,7 +118,7 @@
     }
      .newBox {
         position: absolute;
-        top: 448px;
+        top: 225px;
         left: 15px;
         width: 300px;  
     }
@@ -144,7 +144,7 @@
     }
 
     .box {
-        background:rgba(0, 0, 0, 0.61);
+        background:rgba(61, 183, 228, 1);
         padding: 10px;
         box-sizing: border-box;
         border-radius: 6px;
@@ -192,7 +192,7 @@
     }
 
     .navbar-inverse .navbar-brand {
-        color: #333;
+        color: #3db7e4;
     }
 
     .navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus {

@@ -6,7 +6,7 @@ sqlite3 = require("sqlite3");
 
 
 
-var port = process.env.PORT || 3000;    // set our port
+var port = process.env.PORT || 3001;    // set our port
 
 var db = new sqlite3.Database('db');
 
